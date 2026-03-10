@@ -1,5 +1,12 @@
 # config.yaml
-issuer: http://localhost:5556/dex
+# =============================================================================
+# Dex OIDC Configuration
+# =============================================================================
+# For production, the issuer is set via environment or static config.
+# Default issuer: http://localhost:5556/dex (for development)
+# Production issuer: https://${DOMAIN}/dex (configured via nginx proxy)
+# =============================================================================
+issuer: https://opengluon.cloud/dex
 storage:
   type: sqlite3
   config:
@@ -12,25 +19,23 @@ web:
 staticClients:
   - id: daytona
     redirectURIs:
+      # Development redirect URIs (localhost)
       - 'http://localhost:3000'
       - 'http://localhost:3000/api/oauth2-redirect.html'
       - 'http://localhost:3009/callback'
       - 'http://proxy.localhost:4000/callback'
-      - 'http://47.77.187.134:3000'
-      - 'http://47.77.187.134:3000/api/oauth2-redirect.html'
-      - 'http://47.77.187.134:3009/callback'
-      - 'http://proxy.47.77.187.134:4000/callback'
-      - 'https://47.77.187.134'
-      - 'https://47.77.187.134/api/oauth2-redirect.html'
-      - 'https://47.77.187.134:3009/callback'
-      - 'https://47.77.187.134:8443/callback'
+      # Production redirect URIs
+      - 'https://opengluon.cloud'
+      - 'https://opengluon.cloud/api/oauth2-redirect.html'
+      - 'https://opengluon.cloud:3009/callback'
+      - 'https://proxy.opengluon.cloud:8443/callback'
     name: 'Daytona'
     public: true
 enablePasswordDB: true
 staticPasswords:
-  - email: 'dev@daytona.io'
+  - email: 'frankawp@daytona.io'
     # password generated with:
-    # echo password | htpasswd -BinC 10 admin | cut -d: -f2
-    hash: '$2a$10$2b2cU8CPhOTaGrs1HRQuAueS7JTT5ZHsHSzYiFPm1leZck7Mc8T4W'
-    username: 'admin'
+    # echo password | htpasswd -BinC 10 frankawp | cut -d: -f2
+    hash: '$2y$10$Jllp7p7aO6O3FxIJCJxzwesf/Etc34K0KxFmxVozQ8AmwWWy9ZnXO'
+    username: 'frankawp'
     userID: '1234'
