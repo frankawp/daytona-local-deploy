@@ -1,0 +1,39 @@
+# =============================================================================
+# Dex OIDC Configuration
+# =============================================================================
+# This configuration file is templated. The install script will replace
+# ${DOMAIN} with your actual domain from .env file.
+# =============================================================================
+
+issuer: https://${DOMAIN}/dex
+
+storage:
+  type: sqlite3
+  config:
+    file: /var/dex/dex.db
+
+web:
+  http: 0.0.0.0:5556
+  allowedOrigins: ['*']
+  allowedHeaders: ['x-requested-with']
+
+staticClients:
+  - id: daytona
+    redirectURIs:
+      # Production redirect URIs
+      - 'https://${DOMAIN}'
+      - 'https://${DOMAIN}/api/oauth2-redirect.html'
+      - 'https://${DOMAIN}:3009/callback'
+      - 'https://proxy.${DOMAIN}:8443/callback'
+    name: 'Daytona'
+    public: true
+
+enablePasswordDB: true
+
+staticPasswords:
+  # Default admin user
+  # Password hash generated with: echo <password> | htpasswd -BinC 10 admin | cut -d: -f2
+  - email: '${DEX_ADMIN_EMAIL}'
+    hash: '${DEX_ADMIN_PASSWORD_HASH}'
+    username: '${DEX_ADMIN_USERNAME}'
+    userID: '1'

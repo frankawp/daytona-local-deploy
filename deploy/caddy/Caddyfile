@@ -1,0 +1,67 @@
+# =============================================================================
+# Daytona Caddy Configuration
+# =============================================================================
+# Caddy automatically obtains and renews SSL certificates.
+# Make sure DNS records are configured before starting:
+#   - ${DOMAIN}              -> Server IP
+#   - proxy.${DOMAIN}        -> Server IP
+#   - *.proxy.${DOMAIN}      -> Server IP
+# =============================================================================
+
+# Dashboard & API (port 443)
+${DOMAIN} {
+    # Dex OIDC - must come before general reverse_proxy
+    handle /dex/* {
+        reverse_proxy localhost:5556
+    }
+
+    # Dashboard & API
+    reverse_proxy localhost:3000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+    }
+
+    log {
+        output file /var/log/caddy/daytona.access.log
+    }
+}
+
+# Proxy Service (port 8443)
+# Wildcard certificate with DNS challenge
+# Supported providers: alidns, cloudflare, route53, etc.
+# See: https://caddyserver.com/docs/modules/dns.providers
+*.proxy.${DOMAIN}:8443, proxy.${DOMAIN}:8443 {
+    tls {
+        issuer acme {
+            # Use Let's Encrypt (default) or ZeroSSL
+            # dir https://acme.zerossl.com/v2/DV90
+            # eab <eab_kid> <eab_hmac_key>
+            challenges {
+                dns {
+                    # Choose your DNS provider and uncomment
+                    # provider alidns {
+                    #     access_key_id ${ALIYUN_ACCESS_KEY_ID}
+                    #     access_key_secret ${ALIYUN_ACCESS_KEY_SECRET}
+                    # }
+                    # provider cloudflare {
+                    #     api_token ${CLOUDFLARE_API_TOKEN}
+                    # }
+                }
+            }
+        }
+    }
+
+    reverse_proxy localhost:4000
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options "nosniff"
+    }
+
+    log {
+        output file /var/log/caddy/proxy.access.log
+    }
+}

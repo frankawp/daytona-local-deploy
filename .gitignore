@@ -59,6 +59,9 @@ vitest.config.*.timestamp*
 .eslintcache
 .tmp/
 .env.local
+.env
+docker/.env
+deploy/.env
 
 # Python package metadata
 *.egg-info/
